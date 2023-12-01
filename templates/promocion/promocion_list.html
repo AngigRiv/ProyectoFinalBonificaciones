@@ -1,0 +1,43 @@
+{% extends 'plantilla/maestro.html' %}
+{% load static %}
+{% block content %}
+<main>
+    <div class="container-fluid px-4">
+        <h1 class="mt-4">Promociones</h1>
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-table me-1"></i>
+                Lista de Promociones
+            <a class="btn btn-primary col-2 btn-sm" href="{% url 'promocion_create' %}"> Agregar  </a>
+        </div>
+            <div class="card-body">
+                <table id="datatablesSimple">
+                    <thead>
+                        <tr>
+                            <th>Fecha de Inicio</th>
+                            <th>Fecha de Fin</th>
+                            <th>Descripción</th>
+                            <th>Opciones</th>
+                          </tr>
+                    </thead>
+                 
+                <tbody>
+                    {% for promocion in object_list %}
+                    <tr>
+                      <td>{{ promocion.fecha_inicio }}</td>
+                      <td>{{ promocion.fecha_fin }}</td>
+                      <td>{{ promocion.descripcion }}</td>
+                      <td>
+                        <a href="{% url 'promocion_update' pk=promocion.pk %}" class="btn btn-warning btn-sm">Editar</a>
+                        <a href="{% url 'promocion_delete' pk=promocion.pk %}" class="btn btn-danger btn-sm">Eliminar</a>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+
+{% endblock %}

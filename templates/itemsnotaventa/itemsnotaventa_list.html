@@ -1,0 +1,58 @@
+{% extends 'plantilla/maestro.html' %}
+{% load static %}
+{% block content %}
+<main>
+    <div class="container-fluid px-4">
+        <h1 class="mt-4">Items Nota Ventas</h1>
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-table me-1"></i>
+                Lista de Ventas
+            <a class="btn btn-primary col-2 btn-sm" href="{% url 'itemsnotaventa_create' %}"> Agregar  </a>
+        </div>
+            <div class="card-body">
+                <table id="datatablesSimple">
+                    <thead>
+                        <tr>
+                            <th>Nota Venta</th>
+                            <th>nro item</th>
+                            <th>Articulo</th>
+                            <th>Precio unitario</th>
+                            <th>Cantidad</th>
+                            <th>total item bruto</th>
+                            <th>factor descuento</th>
+                            <th>descuento unitario</th>
+                            <th>total item</th>
+                            <th>es bonificacion</th>
+                            <th>Opciones</th>
+                          </tr>
+                    </thead>
+                 
+                <tbody>
+                    {% for itemsnotaventa in object_list %}
+                    <tr>
+                        
+                      <td>{{ itemsnotaventa.nota_venta_id.nro_pedido }}</td>
+                      <td>{{ itemsnotaventa.nro_item}}</td>
+                      <td>{{ itemsnotaventa.articulo_id.codigo_sku }}</td>
+                      <td>{{ itemsnotaventa.precio_unitario }}</td>
+                      <td>{{ itemsnotaventa.cantidad }}</td>
+                      <td>{{ itemsnotaventa.total_item_bruto }}</td>
+                      <td>{{ itemsnotaventa.factor_descuento }}</td>
+                      <td>{{ itemsnotaventa.descuento_unitario }}</td>
+                      <td>{{ itemsnotaventa.total_item }}</td>
+                      <td>{{ itemsnotaventa.es_bonificacion }}</td>
+                      <td>
+                        <a href="{% url 'itemsnotaventa_update' pk=itemsnotaventa.pk %}" class="btn btn-warning btn-sm">Editar</a>
+                       
+                     </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+
+{% endblock %}

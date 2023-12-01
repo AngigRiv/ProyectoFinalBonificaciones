@@ -1,0 +1,42 @@
+{% extends 'plantilla/maestro.html' %}
+{% load static %}
+{% block content %}
+    <main>
+        <div class="container-fluid px-4">
+            <h1 class="mt-4">Confirmación de Acción</h1>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-table me-1"></i>
+                    Eliminación
+
+                    <p>¿Estás seguro de que deseas eliminar la venta "{{ object.nro_pedido}}"?</p>
+                    <form id="delete-form" method="post" action="{% url 'venta_delete' pk=object.pk %}">
+                        {% csrf_token %}
+                        <button type="button" class="btn btn-danger" onclick="confirmarEliminacion()">Eliminar</button>
+                        <a href="{% url 'venta_list' %}" class="btn btn-secondary">Cancelar</a>
+                    </form>                                      
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function confirmarEliminacion() {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: 'No podrás revertir esto',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, eliminarlo'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Simula el envío del formulario para la eliminación
+                    document.getElementById('delete-form').submit();
+                }
+            });
+        }
+    </script>    
+{% endblock %}

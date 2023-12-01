@@ -1,0 +1,47 @@
+{% extends 'plantilla/maestro.html' %}
+{% load static %}
+{% block content %}
+<main>
+    <div class="container-fluid px-4">
+        <h1 class="mt-4">Lineas de Articulos</h1>
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-table me-1"></i>
+                Lineas de Articulos
+            <a class="btn btn-primary col-2 btn-sm" href="{% url 'linea_create' %}"> Agregar  </a>
+        </div>
+            <div class="card-body">
+                <table id="datatablesSimple">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Descripción</th>
+                            <th>Grupo </th>
+                            <th>Estado</th>
+                            <th>Responsable</th>
+                            <th>Opciones</th>
+                          </tr>
+                    </thead>
+                 
+                <tbody>
+                    {% for linea in object_list %}
+                    <tr>
+                      <td>{{ linea.codigo_linea }}</td>
+                      <td>{{ linea.linea_descripcion }}</td>
+                      <td> {{ linea.grupo_id.codigo_grupo }} </td>
+                      <td>{{ linea.activo }}</td>
+                      <td>{{ linea.responsable_linea.fullname }}</td>
+                      <td>
+                        <a href="{% url 'linea_update' pk=linea.pk %}" class="btn btn-warning btn-sm">Editar</a>
+                        <a href="{% url 'linea_delete' pk=linea.pk %}" class="btn btn-danger btn-sm">Eliminar</a>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+
+{% endblock %}

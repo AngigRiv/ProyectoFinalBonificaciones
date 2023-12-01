@@ -1,0 +1,61 @@
+{% extends 'plantilla/maestro.html' %}
+{% load static %}
+{% block content %}
+<main>
+    <div class="container-fluid px-4">
+        <h1 class="mt-4">Ventas</h1>
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-table me-1"></i>
+                Lista de Ventas
+            <a class="btn btn-primary col-2 btn-sm" href="{% url 'venta_create' %}"> Agregar  </a>
+        </div>
+            <div class="card-body">
+                <table id="datatablesSimple">
+                    <thead>
+                        <tr>
+                            <th>Empresa</th>
+                            <th>Sucursal</th>
+                            <th>N° Pedido</th>
+                            <th>Fecha de Pedido</th>
+                            <th>Tipo de Pedido</th>
+                            <th>Cliente</th>
+                            <th>Condición</th>
+                            <th>Plazo</th>
+                            <th>Tipo de Doc</th>
+                            <th>Total de Pedido</th>
+                            <th>Detalles</th>
+                            <th>Opciones</th>
+                          </tr>
+                    </thead>
+                 
+                <tbody>
+                    {% for ventas in object_list %}
+                    <tr>
+                        
+                      <td>{{ ventas.empresa_id.razon_social }}</td>
+                      <td>{{ ventas.sucursal_id.nombre_comercial }}</td>
+                      <td>{{ ventas.nro_pedido }}</td>
+                      <td>{{ ventas.fecha_pedido }}</td>
+                      <td>{{ ventas.tipo_pedido_id.tipo_pedido_nombre }}</td>
+                      <td>{{ ventas.cliente_id.nombre_razon_social }}</td>
+                      <td>{{ ventas.condicion_venta.descripcion }}</td>
+                      <td>{{ ventas.plazo }}</td>
+                      <td>{{ ventas.tipo_documento }}</td>
+                      <td>{{ ventas.total_pedido }}</td>
+                      <td><a href="{% url 'itemsnotaventa_create' nota_venta_id=ventas.pk %}" class="btn btn-primary btn-sm">Detalle</a></td>
+                      <td>
+                        <a href="{% url 'venta_update' pk=ventas.pk %}" class="btn btn-warning btn-sm"><i class="bi bi-pencil"></i></a>
+                        
+                        <a href="{% url 'venta_delete' pk=ventas.pk %}" class="btn btn-danger btn-sm"><i class="bi bi-trash3-fill"></i></a>
+                     </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+
+{% endblock %}

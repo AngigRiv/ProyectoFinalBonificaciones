@@ -1,0 +1,45 @@
+{% extends 'plantilla/maestro.html' %}
+{% load static %}
+{% block content %}
+<main>
+    <div class="container-fluid px-4">
+        <h1 class="mt-4">Sublineas de Articulos</h1>
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-table me-1"></i>
+                Sublineas de Articulos
+            <a class="btn btn-primary col-2 btn-sm" href="{% url 'sublinea_create' %}"> Agregar  </a>
+        </div>
+            <div class="card-body">
+                <table id="datatablesSimple">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Descripción</th>
+                            <th>Linea </th>
+                            <th>Estado</th>
+                            <th>Opciones</th>
+                          </tr>
+                    </thead>
+                 
+                <tbody>
+                    {% for sublinea in object_list %}
+                    <tr>
+                      <td> {{ sublinea.codigo_sublinea }}</td>
+                      <td> {{ sublinea.sublinea_descripcion }}</td>
+                      <td> {{ sublinea.linea_id.codigo_linea }} </td>
+                      <td> {{ sublinea.estado }}</td>
+                      <td>
+                        <a href="{% url 'sublinea_update' pk=sublinea.pk %}" class="btn btn-warning btn-sm">Editar</a>
+                        <a href="{% url 'sublinea_delete' pk=sublinea.pk %}" class="btn btn-danger btn-sm">Eliminar</a>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+
+{% endblock %}

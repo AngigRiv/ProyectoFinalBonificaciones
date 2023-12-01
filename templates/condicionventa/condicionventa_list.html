@@ -1,0 +1,46 @@
+{% extends 'plantilla/maestro.html' %}
+{% load static %}
+{% block content %}
+<main>
+    <div class="container-fluid px-4">
+        <h1 class="mt-4">Condiciones de Venta</h1>
+       
+       
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-table me-1"></i>
+                Lista de Condiciones de Venta
+            <a class="btn btn-primary col-2 btn-sm" href="{% url 'condicionventa_create' %}"> Agregar  </a>
+        </div>
+            <div class="card-body">
+                <table id="datatablesSimple">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Descripción</th>
+                            <th>Crédito </th>
+                            <th>Opciones</th>
+                          </tr>
+                    </thead>
+                 
+                <tbody>
+                    {% for condicion in object_list %}
+                    <tr>
+                        
+                      <td>{{ condicion.condicion_venta }}</td>
+                      <td>{{ condicion.descripcion }}</td>
+                      <td>{{ condicion.genera_credito}}</td>
+                      <td>
+                        <a href="{% url 'condicionventa_update' pk=condicion.pk %}" class="btn btn-warning btn-sm">Editar</a>
+                        <a href="{% url 'condicionventa_delete' pk=condicion.pk %}" class="btn btn-danger btn-sm">Eliminar</a>
+                     </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+
+{% endblock %}

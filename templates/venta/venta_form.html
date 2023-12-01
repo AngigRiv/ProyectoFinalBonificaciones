@@ -1,0 +1,60 @@
+{% extends 'plantilla/maestro.html' %} {% load static %} {% block content %}
+<main>
+  <div class="container-fluid px-4">
+    <h1 class="mt-4">Formulario de Ventas</h1>
+    <div class="card mb-4">
+      <div class="card-header">
+        <i class="fas fa-table me-1"></i>
+        Registro
+        <a class="btn btn-danger col-2 btn-sm" href="{% url 'venta_list' %}">
+          Regrersar
+        </a>
+      </div>
+      <div class="card-body">
+        <form id="notasventa-form">
+          <div class="row">
+            {% for field in form %}
+            <div class="col-6 py-1">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}</div>
+            {% endfor %}
+          </div>
+
+          <button type="button" id="notasventa-button" class="btn btn-primary">Guardar</button>
+        </form>
+       
+      </div>
+    </div>
+   
+  </div>
+</main>
+<script>
+  document.getElementById('notasventa-button').addEventListener('click', function () {
+      // Obtiene los datos del formulario
+      const formData = new FormData(document.getElementById('notasventa-form'));
+
+      // Hace la solicitud POST a la API
+      fetch("{% url 'notasventa_create' %}", {
+          method: 'POST',
+          headers: {
+              'Accept': 'application/json',
+              'X-CSRFToken': '{{ csrf_token }}', // Asegúrate de incluir el token CSRF
+          },
+          body: formData,
+      })
+      .then(response => response.json())
+      .then(data => {
+          alert('Venta registrada')
+          console.log(data);
+           const redirectUrl = `{% url 'itemsnotaventa_create' nota_venta_id='00000000-0000-0000-0000-000000000000' %}`.replace('00000000-0000-0000-0000-000000000000', data.notas_venta_id);
+
+     window.location.href = redirectUrl;
+          
+      })
+      .catch(error => {
+        alert('Error en envio de formulario')
+          console.error('Error al enviar la solicitud:', error);
+      });
+  });
+</script>
+{% endblock %}

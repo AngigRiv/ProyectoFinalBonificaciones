@@ -1,0 +1,46 @@
+{% extends 'plantilla/maestro.html' %}
+{% load static %}
+{% block content %}
+<main>
+    <div class="container-fluid px-4">
+        <h1 class="mt-4">Detalle de Fórmula</h1>
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-table me-1"></i>
+                Lista de Empresas
+            <a class="btn btn-primary col-2 btn-sm" href="{% url 'formuladetalle_create' %}"> Agregar  </a>
+        </div>
+            <div class="card-body">
+                <table id="datatablesSimple">
+                    <thead>
+                        <tr>
+                            <th>Tipo de Promoción</th>
+                            <th>Descripción</th>
+                            <th>Promoción </th>
+                            <th>Fórmula </th>
+                            <th>Opciones</th>
+                          </tr>
+                    </thead>
+                 
+                <tbody>
+                    {% for formula in object_list %}
+                    <tr>
+                        
+                      <td>{{ formula.tipoPromocion }}</td>
+                      <td>{{ formula.descripcion }}</td>
+                      <td>{{ formula.promocion_id.descripcion }}</td>
+                      <td>{{ formula.formula }}</td>
+                      <td>
+                        <a href="{% url 'formuladetalle_update' pk=formula.pk %}" class="btn btn-warning btn-sm">Editar</a>
+                        <a href="{% url 'formuladetalle_delete' pk=formula.pk %}" class="btn btn-danger btn-sm">Eliminar</a>
+                     </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+
+{% endblock %}

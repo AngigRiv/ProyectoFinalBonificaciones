@@ -1,0 +1,24 @@
+{% extends 'plantilla/maestro.html' %}
+{% load static %}
+{% block content %}
+<main>
+    <div class="container-fluid px-4">
+        <h1 class="mt-4">Formulario de Promoción</h1>
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-table me-1"></i>
+                Registro
+            <a class="btn btn-danger col-2 btn-sm" href="{% url 'promocion_list' %}"> Regresar  </a>
+        </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                  </form>
+            </div>
+        </div>
+    </div>
+</main>
+
+{% endblock %}

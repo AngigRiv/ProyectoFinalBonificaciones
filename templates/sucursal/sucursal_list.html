@@ -1,0 +1,44 @@
+{% extends 'plantilla/maestro.html' %}
+{% load static %}
+{% block content %}
+<main>
+    <div class="container-fluid px-4">
+        <h1 class="mt-4">Sucursales</h1>
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-table me-1"></i>
+                Lista de Sucursales
+            <a class="btn btn-primary col-2 btn-sm" href="{% url 'sucursal_create' %}"> Agregar  </a>
+        </div>
+            <div class="card-body">
+                <table id="datatablesSimple">
+                    <thead>
+                        <tr>
+                            <th>Nombre Comercial</th>
+                            <th>Dirección</th>
+                            <th>Empresa </th>
+                            <th>Opciones</th>
+                          </tr>
+                    </thead>
+                 
+                <tbody>
+                    {% for sucursales in object_list %}
+                    <tr>
+                        
+                      <td>{{ sucursales.nombre_comercial }}</td>
+                      <td>{{ sucursales.direccion }}</td>
+                      <td>{{ sucursales.empresa_id.razon_social }}</td>
+                      <td>
+                        <a href="{% url 'sucursal_update' pk=sucursales.pk %}" class="btn btn-warning btn-sm">Editar</a>
+                        <a href="{% url 'sucursal_delete' pk=sucursales.pk %}" class="btn btn-danger btn-sm">Eliminar</a>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+
+{% endblock %}

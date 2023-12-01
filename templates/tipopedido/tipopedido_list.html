@@ -1,0 +1,42 @@
+{% extends 'plantilla/maestro.html' %}
+{% load static %}
+{% block content %}
+<main>
+    <div class="container-fluid px-4">
+        <h1 class="mt-4">Tipo de Pedido </h1>
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-table me-1"></i>
+                Lista de Tipo de Pedido
+            <a class="btn btn-primary col-2 btn-sm" href="{% url 'tipopedido_create' %}"> Agregar  </a>
+        </div>
+            <div class="card-body">
+                <table id="datatablesSimple">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Nombre de pedido</th>
+                            <th>Acciones</th>
+                          </tr>
+                    </thead>
+                 
+                <tbody>
+                    {% for TipoPedido in object_list %}
+                    <tr>
+                      <td>{{ TipoPedido.tipo_pedido_id }}</td>
+                      <td>{{ TipoPedido.tipo_pedido_nombre }}</td>
+                      <td>                      
+                            <a href="{% url 'tipopedido_update' pk=TipoPedido.pk %}" class="btn btn-warning btn-sm">Editar</a>
+                            <a href="{% url 'tipopedido_delete' pk=TipoPedido.pk %}" class="btn btn-danger btn-sm">Eliminar</a>
+                        
+                      </td>
+                     </tr>
+                  {% endfor %}
+                </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+
+{% endblock %}

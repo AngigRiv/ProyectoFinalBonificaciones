@@ -1,0 +1,46 @@
+{% extends 'plantilla/maestro.html' %}
+{% load static %}
+{% block content %}
+<main>
+    <div class="container-fluid px-4">
+        <h1 class="mt-4">Empresas</h1>
+       
+       
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-table me-1"></i>
+                Lista de Empresas
+            <a class="btn btn-primary col-2 btn-sm" href="{% url 'empresa_create' %}"> Agregar  </a>
+        </div>
+            <div class="card-body">
+                <table id="datatablesSimple">
+                    <thead>
+                        <tr>
+                            <th>RUC</th>
+                            <th>Razon Social</th>
+                            <th>Direccion </th>
+                            <th>Opciones</th>
+                          </tr>
+                    </thead>
+                 
+                <tbody>
+                    {% for empresa in object_list %}
+                    <tr>
+                        
+                      <td>{{ empresa.nro_documento }}</td>
+                      <td>{{ empresa.razon_social }}</td>
+                      <td>{{empresa.direccion}}</td>
+                      <td>
+                        <a href="{% url 'empresa_update' pk=empresa.pk %}" class="btn btn-warning btn-sm">Editar</a>
+                        <a href="{% url 'empresa_delete' pk=empresa.pk %}" class="btn btn-danger btn-sm">Eliminar</a>
+                     </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+
+{% endblock %}

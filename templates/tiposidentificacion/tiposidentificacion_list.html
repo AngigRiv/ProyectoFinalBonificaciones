@@ -1,0 +1,42 @@
+{% extends 'plantilla/maestro.html' %}
+{% load static %}
+{% block content %}
+<main>
+    <div class="container-fluid px-4">
+        <h1 class="mt-4">Tipo de identificacion </h1>
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-table me-1"></i>
+                Lista de identificacion
+            <a class="btn btn-primary col-2 btn-sm" href="{% url 'tiposidentificacion_create' %}"> Agregar  </a>
+        </div>
+            <div class="card-body">
+                <table id="datatablesSimple">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Nombre de tipo</th>
+                            <th>Acciones</th>
+                          </tr>
+                    </thead>
+                 
+                <tbody>
+                    {% for TipoIdentificacion in object_list %}
+                    <tr>
+                      <td>{{ TipoIdentificacion.tipo_identificacion_id }}</td>
+                      <td>{{ TipoIdentificacion.tipo_identificacion_nombre }}</td>
+                      <td>                      
+                            <a href="{% url 'tiposidentificacion_update' pk=TipoIdentificacion.pk %}" class="btn btn-warning btn-sm">Editar</a>
+                            <a href="{% url 'tiposidentificacion_delete' pk=TipoIdentificacion.pk %}" class="btn btn-danger btn-sm">Eliminar</a>
+                        
+                      </td>
+                     </tr>
+                  {% endfor %}
+                </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+
+{% endblock %}

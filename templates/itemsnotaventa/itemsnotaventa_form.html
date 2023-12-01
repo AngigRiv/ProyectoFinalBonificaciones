@@ -1,0 +1,128 @@
+{% extends 'plantilla/maestro.html' %}
+{% load static %}
+{% block content %}
+<main>
+    <div class="container-fluid px-4">
+        <h1 class="mt-4">Formulario de Items Nota Venta</h1>
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-table me-1"></i>
+                Detalle venta
+        </div>
+            <div class="card-body">
+              <form  class="pb-3" id="itemnotasventa-form">
+                <div class="row">
+                    <input type="hidden" name="nota_venta_id" value="{{ request.resolver_match.kwargs.nota_venta_id }}">
+                  {% for field in form %}
+                  <div class="col-6 py-1">
+                  <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                      {{ field }}</div>
+                  {% endfor %}
+                </div>
+      
+                <button type="button" id="itemnotasventa-button" class="btn btn-primary mt-1">Agregar lista</button>
+              </form>
+                <table id="datatablesSimple">
+                    <thead>
+                        <tr>
+                            <th>Nota Venta</th>
+                            <th>nro item</th>
+                            <th>Articulo</th>
+                            <th>Precio unitario</th>
+                            <th>Cantidad</th>
+                            <th>total item bruto</th>
+                            <th>factor descuento</th>
+                            <th>descuento unitario</th>
+                            <th>total item</th>
+                            <th>es bonificacion</th>
+                            <th>Opciones</th>
+                          </tr>
+                    </thead>
+                 
+                <tbody>
+                    {% for itemsnotaventa in object_list %}
+                    <tr>
+                        
+                      <td>{{ itemsnotaventa.nota_venta_id.nro_pedido }}</td>
+                      <td>{{ itemsnotaventa.nro_item}}</td>
+                      <td>{{ itemsnotaventa.articulo_id.descripcion }}</td>
+                      <td>{{ itemsnotaventa.articulo_id.precio_unitario }}</td>
+                      <td>{{ itemsnotaventa.cantidad }}</td>
+                      <td>{{ itemsnotaventa.total_item_bruto }}</td>
+                      <td>{{ itemsnotaventa.factor_descuento }}</td>
+                      <td>{{ itemsnotaventa.descuento_unitario }}</td>
+                      <td>{{ itemsnotaventa.total_item }}</td>
+                      <td>{{ itemsnotaventa.es_bonificacion }}</td>
+                      <td>
+                        <!-- <a href="{% url 'itemsnotaventa_update' pk=itemsnotaventa.pk %}" class="btn btn-warning btn-sm">Editar</a> -->
+                        <button class="btn btn-danger btn-sm" onclick="confirmDelete(`{% url 'itemsnotaventa_delete' pk=itemsnotaventa.pk  %}`)">Eliminar</button>
+                     </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</main>
+<script>
+    function confirmDelete(url) {
+        // Muestra un cuadro de confirmación
+        if (confirm('¿Estás seguro de que deseas eliminar este elemento?')) {
+            // Si el usuario hace clic en "Aceptar", realiza la eliminación a través de la API
+            fetch(url, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}', // Asegúrate de incluir el token CSRF si es necesario
+                },
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error al eliminar el elemento.');
+                }
+                window.location.reload();
+            })
+            .catch(error => {
+                console.error(error);
+                // Puedes manejar el error de alguna manera (mostrar un mensaje, etc.)
+            });
+        } else {
+            // Si el usuario hace clic en "Cancelar", no hace nada
+            // Puedes agregar más lógica aquí si es necesario
+        }
+    }
+    </script>
+    <script>
+        document.getElementById('itemnotasventa-button').addEventListener('click', function () {
+            // Obtiene los datos del formulario
+
+            const formData = new FormData(document.getElementById('itemnotasventa-form'));
+      
+            // Hace la solicitud POST a la API
+            fetch("{% url 'itemsnotaventa_create' %}", {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}', // Asegúrate de incluir el token CSRF
+                },
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.bonificacion) {
+                    alert('Registro bonificado! Item registrado correctamente.');
+                } else {
+                    alert('Item registrado correctamente.');
+                }
+                // En caso de éxito, actualiza la página
+                 window.location.reload();
+            })
+            .catch(error => {
+              alert('Error en envio de formulario')
+                console.error('Error al enviar la solicitud:', error);
+            });
+        });
+      </script>
+{% endblock %}
