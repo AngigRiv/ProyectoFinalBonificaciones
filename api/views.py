@@ -15,6 +15,7 @@ class NotasVentaCreateAPIView(generics.CreateAPIView):
         headers = self.get_success_headers(serializer.data)
         # Retorna la respuesta con el ID de la NotasVenta recién creada
         return Response({'notas_venta_id': serializer.data['nota_venta_id']}, status=status.HTTP_201_CREATED, headers=headers)
+
 class ItemsNotaVentaCreateAPIView(generics.CreateAPIView):
     queryset = ItemsNotaVenta.objects.all()
     serializer_class = ItemsNotaVentaSerializer
@@ -37,23 +38,52 @@ class ItemsNotaVentaCreateAPIView(generics.CreateAPIView):
         return Response({'items_notaventa_id': serializer.data['item_id'], 'bonificacion': bonificacion}, status=status.HTTP_201_CREATED, headers=headers)
     
     def aplica_bonificacion(self, data):
-        cantidad_comprada = data.get('cantidad', 0)
+        cantidad_comprada = int(data.get('cantidad', 0))
         articulo = get_object_or_404(Articulos, articulo_id=data.get('articulo_id'))
-        return (int(cantidad_comprada) == 48 and str(articulo.codigo_sku )== '203101')
-    
-    def aplicar_bonificacion(self, data):
-        articulo_bonificacion = get_object_or_404(Articulos, codigo_sku='200101B')
-        cantidad_bonificacion = 2
-        nota_venta = get_object_or_404(NotasVenta, nota_venta_id=data.get('nota_venta_id'))
-        ItemsNotaVenta.objects.create(
-            nota_venta_id=nota_venta,
-            articulo_id=articulo_bonificacion,
-            cantidad=cantidad_bonificacion,
-            descuento_unitario=articulo_bonificacion.precio_unitario,
-            es_bonificacion=True
+        return (
+            (cantidad_comprada == 48 or cantidad_comprada == 72) and str(articulo.codigo_sku) == '203101') or\
+            (cantidad_comprada == 60 and str(articulo.codigo_sku) == '203101'
         )
-        
-        
+
+    def aplicar_bonificacion(self, data):
+        cantidad_comprada = int(data.get('cantidad', 0))
+        nota_venta = get_object_or_404(NotasVenta, nota_venta_id=data.get('nota_venta_id'))
+
+        # Verificar si se cumple la condición especial para bonificación
+        if self.aplica_bonificacion(data):
+            if cantidad_comprada == 48 or cantidad_comprada == 72:
+                # Crear el ítem de bonificación para cantidad 48 o 72
+                articulo_bonificacion = get_object_or_404(Articulos, codigo_sku='200101B')
+                cantidad_bonificacion = 6 if cantidad_comprada == 72 else 2  # Ajustar según las necesidades
+                ItemsNotaVenta.objects.create(
+                    nota_venta_id=nota_venta,
+                    articulo_id=articulo_bonificacion,
+                    cantidad=cantidad_bonificacion,
+                    descuento_unitario=articulo_bonificacion.precio_unitario,
+                    es_bonificacion=True
+                )
+            elif cantidad_comprada == 60:
+                # Crear el ítem de bonificación para cantidad 60
+                articulo_bonificacion = get_object_or_404(Articulos, codigo_sku='203101')
+                ItemsNotaVenta.objects.create(
+                    nota_venta_id=nota_venta,
+                    articulo_id=articulo_bonificacion,
+                    cantidad=2,
+                    descuento_unitario=articulo_bonificacion.precio_unitario,
+                    es_bonificacion=True
+                )
+        else:
+            # Crear el ítem de bonificación original
+            articulo_bonificacion_original = get_object_or_404(Articulos, codigo_sku='200101B')
+            ItemsNotaVenta.objects.create(
+                nota_venta_id=nota_venta,
+                articulo_id=articulo_bonificacion_original,
+                cantidad=2,
+                descuento_unitario=articulo_bonificacion_original.precio_unitario,
+                es_bonificacion=True
+            )
+
+
 class ItemsNotaVentaDeleteAPIView(generics.DestroyAPIView):
     queryset = ItemsNotaVenta.objects.all()
     serializer_class = ItemsNotaVentaSerializer
