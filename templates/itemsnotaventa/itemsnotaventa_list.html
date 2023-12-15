@@ -8,8 +8,8 @@
             <div class="card-header">
                 <i class="fas fa-table me-1"></i>
                 Lista de Ventas
-            <a class="btn btn-primary col-2 btn-sm" href="{% url 'itemsnotaventa_create' %}"> Agregar  </a>
-        </div>
+                <a class="btn btn-primary col-2 btn-sm" href="{% url 'itemsnotaventa_create' %}"> Agregar  </a>
+            </div>
             <div class="card-body">
                 <table id="datatablesSimple">
                     <thead>
@@ -25,34 +25,31 @@
                             <th>total item</th>
                             <th>es bonificacion</th>
                             <th>Opciones</th>
-                          </tr>
+                        </tr>
                     </thead>
-                 
-                <tbody>
-                    {% for itemsnotaventa in object_list %}
-                    <tr>
-                        
-                      <td>{{ itemsnotaventa.nota_venta_id.nro_pedido }}</td>
-                      <td>{{ itemsnotaventa.nro_item}}</td>
-                      <td>{{ itemsnotaventa.articulo_id.codigo_sku }}</td>
-                      <td>{{ itemsnotaventa.precio_unitario }}</td>
-                      <td>{{ itemsnotaventa.cantidad }}</td>
-                      <td>{{ itemsnotaventa.total_item_bruto }}</td>
-                      <td>{{ itemsnotaventa.factor_descuento }}</td>
-                      <td>{{ itemsnotaventa.descuento_unitario }}</td>
-                      <td>{{ itemsnotaventa.total_item }}</td>
-                      <td>{{ itemsnotaventa.es_bonificacion }}</td>
-                      <td>
-                        <a href="{% url 'itemsnotaventa_update' pk=itemsnotaventa.pk %}" class="btn btn-warning btn-sm">Editar</a>
-                       
-                     </td>
-                    </tr>
-                  {% endfor %}
-                </tbody>
+                    <tbody>
+                        {% for itemsnotaventa in object_list %}
+                            <tr>
+                                <td>{{ itemsnotaventa.nota_venta_id.nro_pedido }}</td>
+                                <td>{{ itemsnotaventa.nro_item}}</td>
+                                <td>{{ itemsnotaventa.articulo_id.codigo_sku }}</td>
+                                <td>{{ itemsnotaventa.articulo_id.precio_unitario }}</td>
+                                <td>{{ itemsnotaventa.cantidad }}</td>
+                                <td>{{ itemsnotaventa.total_item_bruto }}</td>
+                                <td>{{ itemsnotaventa.factor_descuento }}</td>
+                                <td>{{ itemsnotaventa.descuento_unitario }}</td>
+                                <td>{{ itemsnotaventa.total_item }}</td>
+                                <td>{{ itemsnotaventa.es_bonificacion }}</td>
+                                <td>
+                                    <a href="{% url 'itemsnotaventa_update' pk=itemsnotaventa.pk %}" class="btn btn-warning btn-sm">Editar</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
                 </table>
             </div>
-        </div>
-    </div>
+        </div> 
+    </div> 
 </main>
 
 {% endblock %}

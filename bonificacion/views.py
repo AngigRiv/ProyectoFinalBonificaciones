@@ -7,8 +7,10 @@ from django.urls import reverse_lazy
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.db import transaction
 from .forms import *
 from .models import *
+from django.shortcuts import get_object_or_404
 
 def login_user(request):
     if request.method == 'POST':
@@ -119,7 +121,6 @@ class UnidadListView(ListView):
     model = UnidadesMedida
     template_name = 'unidad/unidad_list.html'  # Crea un archivo HTML para listar las marcas
    
-
 class UnidadCreateView(CreateView):
     model = UnidadesMedida
     form_class = UnidadForm
@@ -290,8 +291,8 @@ class PromocionesListView(ListView):
 class PromocionesCreateView(CreateView):
     model = Promociones
     form_class = PromocionForm
-    template_name = 'promocion/promocion_form.html' 
-    success_url = reverse_lazy('promocion_list') 
+    template_name = 'promocion/promocion_form.html'
+    success_url = reverse_lazy('promocion_list')
 
 class PromocionesUpdateView(UpdateView):
     model = Promociones
@@ -309,18 +310,66 @@ class FormulasListView(ListView):
     model = FormulaDetalle
     template_name = 'formuladetalle/formuladetalle_list.html'  # Crea un archivo HTML para listar las marcas
    
-
 class FormulasCreateView(CreateView):
     model = FormulaDetalle
     form_class = FormulaForm
-    template_name = 'formuladetalle/formuladetalle_form.html' 
-    success_url = reverse_lazy('formuladetalle_list') 
+    template_name = 'formuladetalle/formuladetalle_form.html'
+    success_url = reverse_lazy('formuladetalle_list')
+
+    @transaction.atomic
+    def form_valid(self, form):
+        # Guarda la fórmula sin commit para poder asignar el canal de cliente después
+        formula = form.save(commit=False)
+
+        # Obtén el canal de cliente del formulario
+        canal_cliente = form.cleaned_data.get('canal_cliente')
+
+        # Asigna el canal de cliente a la fórmula
+        formula.canal_cliente = canal_cliente
+
+        articulo_a_bonificar = form.cleaned_data.get('articulo_a_bonificar')
+        articulos_seleccionar = form.cleaned_data.get('articulos_seleccionar', [])
+
+        if len(articulos_seleccionar) != formula.productos_a_comprar:
+            messages.error(self.request, 'Debe seleccionar la cantidad exacta de los artículos a comprar.')
+            return self.form_invalid(form)
+
+        formula.save()
+        formula.articulo_a_bonificar = articulo_a_bonificar
+        formula.articulos_seleccionar.set(articulos_seleccionar)
+
+        messages.success(self.request, 'La fórmula se ha creado correctamente.')
+        return super().form_valid(form)
 
 class FormulasUpdateView(UpdateView):
     model = FormulaDetalle
     form_class = FormulaForm
     template_name = 'formuladetalle/formuladetalle_form.html'
     success_url = reverse_lazy('formuladetalle_list')
+
+    def form_valid(self, form):
+        formula = form.save(commit=False)
+        articulo_a_bonificar = form.cleaned_data.get('articulo_a_bonificar')
+        articulos_seleccionar = form.cleaned_data.get('articulos_seleccionar', [])
+
+        if len(articulos_seleccionar) != formula.productos_a_comprar:
+            messages.error(self.request, 'Debe seleccionar la cantidad exacta de los artículos a comprar.')
+            return self.form_invalid(form)
+
+        formula.save()
+        formula.articulo_a_bonificar = articulo_a_bonificar
+        formula.articulos_seleccionar.set(articulos_seleccionar)
+
+        messages.success(self.request, 'La fórmula se ha actualizado correctamente.')
+        return super().form_valid(form)
+
+    def get_form(self, form_class=None):
+        form = super(FormulasUpdateView, self).get_form(form_class)
+        # Obtener instancias seleccionadas cuando el formulario se utiliza para editar
+        selected_articles = self.object.articulos_seleccionar.all()
+        form.fields['articulos_seleccionar'].initial = [str(article.pk) for article in selected_articles]
+        form.fields['articulos_seleccionar'].queryset = Articulos.objects.all()  # Agregamos esta línea
+        return form
 
 class FormulasDeleteView(DeleteView):
     model = FormulaDetalle
@@ -353,12 +402,6 @@ class ArticulosDeleteView(DeleteView):
 class ItemsNotaVentaListView(ListView):
     model = ItemsNotaVenta
     template_name = 'itemsnotaventa/itemsnotaventa_list.html'  # Crea un archivo HTML para listar las marcas
-   
-# class ItemsNotaVentaCreateView(CreateView):
-#     model = ItemsNotaVenta
-#     form_class = ItemsNotaVentaForm
-#     template_name = 'itemsnotaventa/itemsnotaventa_form.html'  # Crea un archivo HTML para el formulario de creación
-#     success_url = reverse_lazy('itemsnotaventa_list')  # Redirige a la lista de marcas después de crear una marca
 
 class ItemsNotaVentaCreateView(FormView, ListView):
     template_name = 'itemsnotaventa/itemsnotaventa_form.html'
@@ -485,3 +528,61 @@ class SublineasArticulosDeleteView(DeleteView):
     model = SublineasArticulos
     template_name = 'sublinea/sublinea_confirm_delete.html'
     success_url = reverse_lazy('sublinea_list')
+
+#DESCUENTOS
+class DescuentosListView(ListView):
+    model = Descuentos
+    template_name = 'descuento/descuento_list.html'
+    context_object_name = 'descuento_list'
+
+class DescuentosCreateView(CreateView):
+    model = Descuentos
+    form_class = DescuentosForm
+    template_name = 'descuento/descuento_form.html'
+    success_url = reverse_lazy('descuento_list')
+
+    @transaction.atomic
+    def form_valid(self, form):
+        descuento = form.save(commit=False)
+        print(f"Descuento ID: {descuento.descuento_id}")
+        print(f"Cantidad Total Mínima Venta: {descuento.cantidad_total_minima_venta}")
+
+        # Configuración de campos según las condiciones
+        descuento.rango_venta = form.cleaned_data.get('rango_venta', False)
+        descuento.rango_productos = form.cleaned_data.get('rango_productos', False)
+
+        if not descuento.rango_venta:
+            descuento.cantidad_total_maxima_venta = False
+
+        if not descuento.rango_productos:
+            descuento.cantidad_maxima_productos = False
+
+        # Si sin límite venta no está marcado, establecer como False
+        descuento.sin_limite_venta = form.cleaned_data.get('sin_limite_venta', False)
+        descuento.sin_limite_productos= form.cleaned_data.get('sin_limite_productos', False)
+
+        descuento.save()
+        messages.success(self.request, 'El descuento se ha creado correctamente.')
+        return super().form_valid(form)
+
+class DescuentosUpdateView(UpdateView):
+    model = Descuentos
+    form_class = DescuentosForm
+    template_name = 'descuento/descuento_form.html'
+    success_url = reverse_lazy('descuento_list')
+
+    @transaction.atomic
+    def form_valid(self, form):
+        descuento = form.save(commit=False)
+        descuento.save()
+        messages.success(self.request, 'El descuento se ha actualizado correctamente.')
+        return super().form_valid(form)
+
+@receiver(pre_save, sender=Descuentos)
+def convertir_a_decimal(sender, instance, **kwargs):
+    instance.porcentaje_descuento = float(instance.porcentaje_descuento)
+
+class DescuentosDeleteView(DeleteView):
+    model = Descuentos
+    template_name = 'descuento/descuento_confirm_delete.html'
+    success_url = reverse_lazy('descuento_list')

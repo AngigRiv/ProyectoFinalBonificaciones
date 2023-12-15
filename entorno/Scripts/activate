@@ -38,7 +38,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="C:\USS\IX CICLO\TALLER DE LENGUAJES DE PROGRAMACIÓN\PROYECTO_FINAL\ProyectoFinalBonificaciones\entorno"
+VIRTUAL_ENV="C:\USS\IX CICLO\TALLER DE SEGURIDAD INFORMÁTICA\CAMBIOSSSSS\ProyectoFinalBonificaciones-main\entorno"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"

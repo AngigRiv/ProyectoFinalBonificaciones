@@ -8,39 +8,48 @@
             <div class="card-header">
                 <i class="fas fa-table me-1"></i>
                 Lista de Empresas
-            <a class="btn btn-primary col-2 btn-sm" href="{% url 'formuladetalle_create' %}"> Agregar  </a>
-        </div>
+                <a class="btn btn-primary col-2 btn-sm" href="{% url 'formuladetalle_create' %}"> Agregar  </a>
+            </div>
             <div class="card-body">
                 <table id="datatablesSimple">
                     <thead>
                         <tr>
-                            <th>Tipo de Promoción</th>
                             <th>Descripción</th>
-                            <th>Promoción </th>
-                            <th>Fórmula </th>
+                            <th>Promoción</th>
+                            <th>N° artículos a combinar</th>
+                            <th>Artículos</th>
+                            <th>N° artículos a comprar</th>
+                            <th>Articulo a bonificar</th>
+                            <th>N° artículos a bonificar</th>
+                            <th>Canal del Cliente</th>
                             <th>Opciones</th>
-                          </tr>
+                        </tr>
                     </thead>
-                 
-                <tbody>
-                    {% for formula in object_list %}
-                    <tr>
-                        
-                      <td>{{ formula.tipoPromocion }}</td>
-                      <td>{{ formula.descripcion }}</td>
-                      <td>{{ formula.promocion_id.descripcion }}</td>
-                      <td>{{ formula.formula }}</td>
-                      <td>
-                        <a href="{% url 'formuladetalle_update' pk=formula.pk %}" class="btn btn-warning btn-sm">Editar</a>
-                        <a href="{% url 'formuladetalle_delete' pk=formula.pk %}" class="btn btn-danger btn-sm">Eliminar</a>
-                     </td>
-                    </tr>
-                  {% endfor %}
-                </tbody>
+                    <tbody>
+                        {% for formula in object_list %}
+                        <tr>
+                            <td>{{ formula.descripcion }}</td>
+                            <td>{{ formula.promocion_id.descripcion }}</td>
+                            <td>{{ formula.productos_a_comprar }}</td>
+                            <td>
+                                {% for producto in formula.articulos_seleccionar.all %}
+                                    {{ producto.descripcion }}<br>
+                                {% endfor %}
+                            </td>
+                            <td>{{ formula.cantidad_a_comprar }}</td>
+                            <td>{{ formula.articulo_a_bonificar.descripcion }}</td>
+                            <td>{{ formula.cantidad_a_bonificar }}</td>
+                            <td>{{ formula.canal_cliente.canal_cliente_descripcion }}</td>
+                            <td>
+                                <a href="{% url 'formuladetalle_update' pk=formula.pk %}" class="btn btn-warning btn-sm">Editar</a>
+                                <a href="{% url 'formuladetalle_delete' pk=formula.pk %}" class="btn btn-danger btn-sm">Eliminar</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
                 </table>
             </div>
         </div>
     </div>
 </main>
-
 {% endblock %}

@@ -1,0 +1,53 @@
+{% extends 'plantilla/maestro.html' %}
+{% load static %}
+{% block content %}
+<main>
+    <div class="container-fluid px-4">
+        <h1 class="mt-4">Detalle de Descuento</h1>
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-table me-1"></i>
+                Lista de Descuentos
+                <a class="btn btn-primary col-2 btn-sm" href="{% url 'descuento_create' %}"> Agregar  </a>
+            </div>
+            <div class="card-body">
+                <table id="datatablesSimple" class="table">
+                    <thead>
+                        <tr>
+                            <th>Descripción</th>
+                            <th>Tipo Cantidad Total Venta</th>
+                            <th>Porcentaje Descuento</th>
+                            <th>Línea de Producto</th>
+                            <th>Tipo Cantidad Productos</th>
+                            <th>Limitar Clientes</th>
+                            <th>Canal del Cliente</th>
+                            <th>Opciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for descuento in object_list %}
+                        <tr>
+                            <td>{{ descuento.descripcion }}</td>
+                            <td>{{ descuento.get_seleccionar_cantidad_total_venta_display }}</td>
+                            <td>{{ descuento.porcentaje_descuento }}%</td>
+                            <td>{{ descuento.linea_producto }}</td>
+                            <td>{{ descuento.get_seleccionar_cantidad_productos_display }}</td>
+                            <td>{{ descuento.limitar_clientes }}</td>
+                            <td>
+                                {% if descuento.limitar_clientes %}
+                                    {{ descuento.canal_cliente }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'descuento_update' pk=descuento.pk %}" class="btn btn-warning btn-sm">Editar</a>
+                                <a href="{% url 'descuento_delete' pk=descuento.pk %}" class="btn btn-danger btn-sm">Eliminar</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}

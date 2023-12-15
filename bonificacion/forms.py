@@ -63,6 +63,7 @@ class UnidadForm(forms.ModelForm):
             'unidad_nombre': forms.TextInput(attrs={'class': 'form-control'}),
         }
 
+#CLIENTES
 class ClientesForm(forms.ModelForm):
     tipo_identificacionC_id = forms.ModelChoiceField(queryset=TiposIdentificacion.objects.all(),
         widget=forms.Select(attrs={'class': 'form-control'})
@@ -89,7 +90,6 @@ class ClientesForm(forms.ModelForm):
 
         # Personalizamos la representación de las opciones del campo responsable_grupo
         self.fields['canal_cliente_id'].label_from_instance = lambda obj: f"{obj.canal_cliente_descripcion}"
-
 
 #CANAL DE CLIENTE
 class CanalClienteForm(forms.ModelForm):
@@ -129,15 +129,17 @@ class TiposPedidoForm(forms.ModelForm):
     
 #CONDICIONES DE VENTA
 class CondicionesVentaForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(CondicionesVentaForm, self).__init__(*args, **kwargs)
+        # Personaliza la representación de las opciones del campo tipo_documento
+
     class Meta:
         model = CondicionesVenta
-        fields = ['condicion_venta','descripcion','genera_credito']
+        fields = ['condicion_venta', 'descripcion']
         widgets = {
             'condicion_venta': forms.TextInput(attrs={'class': 'form-control'}),
-            'descripcion': forms.TextInput(attrs={'class': 'form-control'}),
-            'genera_credito': forms.TextInput(attrs={'class': 'form-control'}),
+            'descripcion': forms.Select(attrs={'class': 'custom-select'})
         }
-
 #VENTAS
 class NotasVentaForm(forms.ModelForm):
     class Meta:
@@ -174,22 +176,59 @@ class PromocionForm(forms.ModelForm):
 
 #DETALLE DE FORMULA
 class FormulaForm(forms.ModelForm):
-    promocion_id = forms.ModelChoiceField(queryset=Promociones.objects.all(),
-        widget=forms.Select(attrs={'class': 'form-control'})
+    descripcion = forms.CharField(
+        widget=forms.TextInput(attrs={'class': 'form-control my-custom-class'}),
+        label='Descripción'
+    )
+
+    promocion_id = forms.ModelChoiceField(
+        queryset=Promociones.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-control my-custom-class'}),
+        label='Promoción'
+    )
+
+    productos_a_comprar = forms.IntegerField(
+        widget=forms.NumberInput(attrs={'class': 'form-control my-custom-class'}),
+        min_value=1,
+        label='Cantidad de artículos a combinar'
+    )
+
+    articulos_seleccionar = forms.ModelMultipleChoiceField(
+        queryset=Articulos.objects.all(),
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'my-custom-class'}),
+        label='Artículos a seleccionar',
+        required=False
+    )
+
+    cantidad_a_comprar = forms.IntegerField(
+        widget=forms.NumberInput(attrs={'class': 'form-control my-custom-class'}),
+        min_value=1,
+        label='Cantidad a comprar'
+    )
+
+    articulo_a_bonificar = forms.ModelChoiceField(
+        queryset=Articulos.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-control my-custom-class'}),
+        label='Artículo a bonificar',
+    )
+
+    cantidad_a_bonificar = forms.IntegerField(
+        widget=forms.NumberInput(attrs={'class': 'form-control my-custom-class'}),
+        min_value=1,
+        label='Cantidad a bonificar'
+    )
+
+    # Agrega el campo canal_cliente al formulario
+    canal_cliente = forms.ModelChoiceField(
+        queryset=CanalCliente.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-control my-custom-class'}),
+        label='Canal Cliente'
     )
 
     class Meta:
         model = FormulaDetalle
-        fields = ['tipoPromocion','descripcion','promocion_id', 'formula']
-        widgets = {
-            'tipoPromocion': forms.TextInput(attrs={'class': 'form-control'}),
-            'descripcion': forms.TextInput(attrs={'class': 'form-control'}),
-            'formula': forms.TextInput(attrs={'class': 'form-control'}),
-        }
-    def __init__(self, *args, **kwargs):
-        super(FormulaForm, self).__init__(*args, **kwargs)
-        # Personalizamos la representación de las opciones del campo empresa
-        self.fields['promocion_id'].label_from_instance = lambda obj: f"{obj.descripcion}"
+        fields = ['descripcion', 'promocion_id', 'productos_a_comprar', 'articulos_seleccionar', 'cantidad_a_comprar', 'articulo_a_bonificar', 'cantidad_a_bonificar', 'canal_cliente']
+        field_order = ['descripcion', 'promocion_id', 'productos_a_comprar', 'articulos_seleccionar', 'cantidad_a_comprar', 'articulo_a_bonificar', 'cantidad_a_bonificar', 'canal_cliente']
 
 #ARTICULOS    
 class ArticulosForm(forms.ModelForm):
@@ -220,7 +259,6 @@ class ItemsNotaVentaForm(forms.ModelForm):
             'articulo_id': forms.Select(attrs={'class': 'form-control'}),
             'cantidad': forms.TextInput(attrs={'class': 'form-control'}),
         }
-
 
 #GruposProveedor   
 class GruposProveedorForm(forms.ModelForm):
@@ -298,3 +336,39 @@ class SublineasArticulosForm(forms.ModelForm):
         
         # Personalizamos la representación de las opciones del campo linea
         self.fields['linea_id'].label_from_instance = lambda obj: f"{obj.codigo_linea}"
+
+#DESCUENTOS
+class DescuentosForm(forms.ModelForm):
+    linea_id = forms.ModelChoiceField(
+        queryset=LineasArticulos.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+
+    canal_cliente = forms.ModelChoiceField(
+        queryset=CanalCliente.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-control my-custom-class'}),
+        label='Canal Cliente'
+    )
+
+    class Meta:
+        model = Descuentos
+        fields = '__all__'
+        widgets = {
+            'cantidad_total_minima_venta': forms.NumberInput(attrs={'class': 'form-control'}),
+            'cantidad_total_maxima_venta': forms.NumberInput(attrs={'class': 'form-control'}),
+            'sin_limite_venta': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'rango_venta': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'porcentaje_descuento': forms.NumberInput(attrs={'class': 'form-control'}),
+            'linea_producto': forms.Select(attrs={'class': 'form-control'}),
+            'cantidad_minimo_productos': forms.NumberInput(attrs={'class': 'form-control'}),
+            'cantidad_maxima_productos': forms.NumberInput(attrs={'class': 'form-control'}),
+            'sin_limite_productos': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'rango_productos': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'limitar_clientes': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'canal_cliente': forms.Select(attrs={'class': 'form-control my-custom-class'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(DescuentosForm, self).__init__(*args, **kwargs)
+        self.fields['linea_producto'].label_from_instance = lambda obj: f"{obj.codigo_linea}"
+        self.fields['canal_cliente'].label_from_instance = lambda obj: f"{obj.canal_cliente_descripcion}"

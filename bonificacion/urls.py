@@ -108,4 +108,11 @@ urlpatterns = [
     path('crearSLA/', login_required(SublineasArticulosCreateView.as_view()), name='sublinea_create'),
     path('<uuid:pk>/editarSLA/', login_required(SublineasArticulosUpdateView.as_view()), name='sublinea_update'),
     path('<uuid:pk>/eliminarSLA/', login_required(SublineasArticulosDeleteView.as_view()), name='sublinea_delete'),
+
+    #DESCUENTOS
+    path('listarDescuentos/', login_required(DescuentosListView.as_view()), name='descuento_list'),
+    path('crearDescuento/', login_required(DescuentosCreateView.as_view()), name='descuento_create'),
+    path('<uuid:pk>/editarDescuento/', login_required(DescuentosUpdateView.as_view()), name='descuento_update'),
+    path('<uuid:pk>/eliminarDescuento/', login_required(DescuentosDeleteView.as_view()), name='descuento_delete'),
+    
 ]

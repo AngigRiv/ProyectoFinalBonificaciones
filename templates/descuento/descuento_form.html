@@ -1,0 +1,167 @@
+{% extends 'plantilla/maestro.html' %}
+{% load static %}
+{% block content %}
+<main>
+    <div class="container-fluid px-4">
+        <h1 class="mt-4">Formulario de Descuento</h1>
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-table me-1"></i>
+                Registro
+                <a class="btn btn-danger col-2 btn-sm" href="{% url 'descuento_list' %}"> Regresar </a>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        {{ form.cantidad_total_minima_venta.label_tag }}
+                        {{ form.cantidad_total_minima_venta }}
+                        {{ form.cantidad_total_minima_venta.errors }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.rango_venta.label_tag }}
+                        {{ form.rango_venta }}
+                        {{ form.rango_venta.errors }}
+                    </div>
+
+                    <div class="mb-3" id="div_cantidad_total_venta" style="display: none;">
+                        {{ form.cantidad_total_maxima_venta.label_tag }}
+                        {{ form.cantidad_total_maxima_venta }}
+                        {{ form.cantidad_total_maxima_venta.errors }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.sin_limite_venta.label_tag }}
+                        {{ form.sin_limite_venta }}
+                        {{ form.sin_limite_venta.errors }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.porcentaje_descuento.label_tag }}
+                        {{ form.porcentaje_descuento }}
+                        {{ form.porcentaje_descuento.errors }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.linea_producto.label_tag }}
+                        {{ form.linea_producto }}
+                        {{ form.linea_producto.errors }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.cantidad_minimo_productos.label_tag }}
+                        {{ form.cantidad_minimo_productos }}
+                        {{ form.cantidad_minimo_productos.errors }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.rango_productos.label_tag }}
+                        {{ form.rango_productos }}
+                        {{ form.rango_productos.errors }}
+                    </div>
+
+                    <div class="mb-3" id="div_cantidad_total_productos" style="display: none;">
+                        {{ form.cantidad_maxima_productos.label_tag }}
+                        {{ form.cantidad_maxima_productos }}
+                        {{ form.cantidad_maxima_productos.errors }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.sin_limite_productos.label_tag }}
+                        {{ form.sin_limite_productos }}
+                        {{ form.sin_limite_productos.errors }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.limitar_clientes.label_tag }}
+                        {{ form.limitar_clientes }}
+                        {{ form.limitar_clientes.errors }}
+                    </div>
+
+                    <div class="mb-3" id="div_canal_cliente" style="display: none;">
+                        {{ form.canal_cliente.label_tag }}
+                        {{ form.canal_cliente }}
+                        {{ form.canal_cliente.errors }}
+                    </div>
+
+                    <button type="submit" class="btn btn-primary mt-3">Guardar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+<script>
+    $(document).ready(function () {
+        // Función para ocultar todos los campos
+        function ocultarTodosLosCampos() {
+            $('.campo-descuento').hide();
+        }
+
+        // Función para mostrar u ocultar campos según la opción seleccionada
+        function mostrarOcultarCampos() {
+            console.log("Función mostrarOcultarCampos llamada");
+
+            // Mostrar u ocultar canal_cliente según el estado de limitar_clientes
+            mostrarOcultarCamposCanalCliente();
+            mostrarOcultarCamposCantidadMaxima();
+            mostrarOcultarCamposProductoMaximo();
+        }
+
+        // Función para mostrar u ocultar canal_cliente según el estado de limitar_clientes
+        function mostrarOcultarCamposCanalCliente() {
+            console.log("Función mostrarOcultarCamposCanalCliente llamada");
+
+            // Lógica para mostrar u ocultar canal_cliente según ciertas condiciones
+            var limitarClientes = $('#id_limitar_clientes').prop('checked');
+
+            if (limitarClientes) {
+                console.log("Limitar clientes checked (canal cliente)");
+                $('#div_canal_cliente').show();
+            } else {
+                console.log("Limitar clientes unchecked (canal cliente)");
+                $('#div_canal_cliente').hide();
+            }
+        }
+
+        function mostrarOcultarCamposCantidadMaxima() {
+            console.log("Función mostrarOcultarCamposCantidadMaxima llamada");
+
+            // Lógica para mostrar u ocultar canal_cliente según ciertas condiciones
+            var maximaventa = $('#id_rango_venta').prop('checked');
+
+            if (maximaventa ) {
+                console.log("Rango Venta checked (rango venta)");
+                $('#div_cantidad_total_venta').show();
+            } else {
+                console.log("Rango Venta unchecked (rango venta)");
+                $('#div_cantidad_total_venta').hide();
+            }
+        }
+
+        function mostrarOcultarCamposProductoMaximo() {
+            console.log("Función mostrarOcultarCamposProductoMaximo llamada");
+
+            // Lógica para mostrar u ocultar canal_cliente según ciertas condiciones
+            var maximoproducto = $('#id_rango_productos').prop('checked');
+
+            if (maximoproducto) {
+                console.log("Rango Producto checked (rango producto)");
+                $('#div_cantidad_total_productos').show();
+            } else {
+                console.log("Rango Producto unchecked (rango producto)");
+                $('#div_cantidad_total_productos').hide();
+            }
+        }
+
+        // Llama a la función al cargar la página y al cambiar la selección
+        mostrarOcultarCampos();
+        $('#id_limitar_clientes').change(mostrarOcultarCampos);
+        $('#id_rango_venta').change(mostrarOcultarCampos);
+        $('#id_rango_productos').change(mostrarOcultarCampos);
+
+        // Llama a la función al cargar la página para asegurarse de que todos los campos estén ocultos
+        ocultarTodosLosCampos();
+    });
+</script>
+{% endblock %}

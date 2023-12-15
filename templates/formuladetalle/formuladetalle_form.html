@@ -3,19 +3,75 @@
 {% block content %}
 <main>
     <div class="container-fluid px-4">
-        <h1 class="mt-4">Formulario de Condición Venta</h1>
+        <h1 class="mt-4">Formulario de Detalle Fórmula</h1>
         <div class="card mb-4">
             <div class="card-header">
                 <i class="fas fa-table me-1"></i>
                 Registro
-            <a class="btn btn-danger col-2 btn-sm" href="{% url 'formuladetalle_list' %}"> Regrersar  </a>
-        </div>
+                <a class="btn btn-danger col-2 btn-sm" href="{% url 'formuladetalle_list' %}"> Regresar  </a>
+            </div>
             <div class="card-body">
                 <form method="post">
                     {% csrf_token %}
-                    {{ form.as_p }}
-                    <button type="submit" class="btn btn-primary">Guardar</button>
-                  </form>
+                
+                    <div class="mb-3">
+                        {{ form.descripcion.label_tag }}
+                        {{ form.descripcion }}
+                        {{ form.descripcion.errors }}
+                    </div>
+                
+                    <div class="mb-3">
+                        {{ form.promocion_id.label_tag }}
+                        {{ form.promocion_id }}
+                        {{ form.promocion_id.errors }}
+                    </div>
+                
+                    <div class="mb-3">
+                        {{ form.productos_a_comprar.label_tag }}
+                        {{ form.productos_a_comprar }}
+                        {{ form.productos_a_comprar.errors }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.articulos_seleccionar.label_tag }}
+                        {% for checkbox in form.articulos_seleccionar %}
+                            <div class="checkbox-container">
+                                <div class="checkbox-input">
+                                    {{ checkbox.tag }}
+                                </div>
+                                <span class="checkbox-label">{{ checkbox.choice_label }}</span>
+                            </div>
+                        {% endfor %}
+                        {{ form.articulos_seleccionar.errors }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.cantidad_a_comprar.label_tag }}
+                        {{ form.cantidad_a_comprar }}
+                        {{ form.cantidad_a_comprar.errors }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.articulo_a_bonificar.label_tag }}
+                        {{ form.articulo_a_bonificar }}
+                        {{ form.articulo_a_bonificar.errors }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.cantidad_a_bonificar.label_tag }}
+                        {{ form.cantidad_a_bonificar }}
+                        {{ form.cantidad_a_bonificar.errors }}
+                    </div>
+
+                    <!-- Agregar el campo canal_cliente -->
+                    <div class="mb-3">
+                        {{ form.canal_cliente.label_tag }}
+                        {{ form.canal_cliente }}
+                        {{ form.canal_cliente.errors }}
+                    </div>
+                
+                    <button type="submit" class="btn btn-primary mt-3">Guardar</button>
+                </form>
             </div>
         </div>
     </div>
