@@ -119,5 +119,46 @@
 </main>
 <script>
     const itemsnotaventaCreateUrl = "{% url 'itemsnotaventa_create' %}";
+
+    // Calcula el subtotal, descuento y total al cargar la página
+    document.addEventListener("DOMContentLoaded", function () {
+        updateSubtotal();
+        updateDescuento();
+        updateTotal();
+    });
+
+    // Función para actualizar el subtotal
+    function updateSubtotal() {
+        let subtotal = 0;
+        document.querySelectorAll("#datatablesItems tbody tr:not(.bonificacion-row)").forEach(function (row) {
+            subtotal += parseFloat(row.querySelector("td:nth-child(6)").textContent);
+        });
+
+        // Actualiza el valor en el placeholder
+        document.getElementById("subtotal-placeholder").textContent = subtotal.toFixed(2);
+    }
+
+    // Función para actualizar el descuento
+    function updateDescuento() {
+        let descuento = 0;
+        document.querySelectorAll("#datatablesItems tbody tr:not(.bonificacion-row)").forEach(function (row) {
+            descuento += parseFloat(row.querySelector("td:nth-child(7)").textContent);
+        });
+
+        // Actualiza el valor en el placeholder
+        document.getElementById("descuento-placeholder").textContent = descuento.toFixed(2);
+    }
+
+    // Función para actualizar el total
+    function updateTotal() {
+        const subtotal = parseFloat(document.getElementById("subtotal-placeholder").textContent);
+        const descuento = parseFloat(document.getElementById("descuento-placeholder").textContent);
+
+        // Calcula el total restando el descuento al subtotal
+        const total = subtotal - descuento;
+
+        // Actualiza el valor en el placeholder
+        document.getElementById("total-placeholder").textContent = total.toFixed(2);
+    }
 </script>
 {% endblock %}

@@ -369,7 +369,7 @@ class DescuentosForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request', None)
         super(DescuentosForm, self).__init__(*args, **kwargs)
-        self.fields['linea_producto'].label_from_instance = lambda obj: f"{obj.codigo_linea}"
+        self.fields['linea_producto'].label_from_instance = lambda obj: f"{obj.linea_descripcion}"
         self.fields['canal_cliente'].label_from_instance = lambda obj: f"{obj.canal_cliente_descripcion}"
 
         # Deshabilitar inicialmente el campo canal_cliente y cantidad_total_maxima_venta
