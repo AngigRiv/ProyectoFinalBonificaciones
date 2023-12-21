@@ -217,6 +217,7 @@ class ItemsNotaVenta(models.Model):
         last_nro_item = ItemsNotaVenta.objects.filter(nota_venta_id=self.nota_venta_id).aggregate(Max('nro_item'))['nro_item__max']
         self.nro_item = 1 if last_nro_item is None else last_nro_item + 1
         self.descuento_unitario = self.total_item_bruto * self.factor_descuento
+        self.total_item_bruto = self.cantidad * self.articulo_id.precio_unitario
         self.total_item = self.total_item_bruto - self.descuento_unitario
         super().save(*args, **kwargs)
 
@@ -248,13 +249,13 @@ class Descuentos(models.Model):
     descuento_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
     cantidad_total_minima_venta = models.DecimalField(max_digits=12, decimal_places=2)
     cantidad_total_maxima_venta = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
-    sin_limite_venta = models.BooleanField(default=False, null=True)
+    sin_limite_venta = models.BooleanField(default=False, null=True, blank=True)
     rango_venta = models.BooleanField(default=False, null = True)
     porcentaje_descuento = models.IntegerField()
     linea_producto = models.ForeignKey(LineasArticulos, on_delete=models.CASCADE)
     cantidad_minimo_productos = models.IntegerField(null=True, blank=True)
     cantidad_maxima_productos = models.IntegerField(null=True, blank=True)
-    sin_limite_productos = models.BooleanField(default=False, null=True)
+    sin_limite_productos = models.BooleanField(default=False, null=True, blank=True)
     rango_productos = models.BooleanField(default=False, null = True)
     limitar_clientes = models.BooleanField(default=False)
     canal_cliente = models.ForeignKey(CanalCliente, on_delete=models.CASCADE, default=None, null=True, blank=True)
