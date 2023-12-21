@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (addButton) {
         addButton.addEventListener('click', function () {
             const formData = new FormData(document.getElementById('itemnotasventa-form'));
-
+        
             // Enviar la solicitud para agregar un nuevo elemento
             fetch(itemsnotaventaCreateUrl, {
                 method: 'POST',
@@ -25,27 +25,35 @@ document.addEventListener('DOMContentLoaded', function () {
             })
                 .then(response => {
                     if (!response.ok) {
-                        // Si hay un error en la respuesta, lanzar una excepción
                         throw new Error('');
                     }
-                    return response.json(); // Cambiado a json para manejar mensajes del servidor
+                    return response.json();
                 })
                 .then(data => {
-                    // Actualizar la tabla solo si el servidor indica que se registró correctamente
+                    console.log('Data from server:', data);
                     if (data.message && data.message.includes('correctamente')) {
                         updateItemsTable(data.newItem);
-                        // Mostrar mensaje de éxito en el cuerpo de la página
-                        showSuccessMessage('Artículo agregado correctamente. La página se actualizará en breve.');
-                        // Recargar la página inmediatamente
-                        window.location.reload(true);
+        
+                        // Determinar si es una bonificación
+                        const esBonificacion = formData.get('es_bonificacion') === 'true';
+        
+                        // Mostrar mensaje de éxito según si es una bonificación o no
+                        if (esBonificacion) {
+                            showSuccessMessage('Producto bonificado correctamente. La página se actualizará en breve.');
+                        } else {
+                            showSuccessMessage('Artículo agregado correctamente. La página se actualizará en breve.');
+                        }
+        
+                        // No es necesario recargar la página inmediatamente aquí
                     } else {
                         // Si el mensaje no está presente, refrescar la página sin esperar
-                        window.location.reload(true);
+                        //window.location.reload(true);
                     }
                 })
                 .catch(error => {
-                    console.error(error);
+                    //console.error(error);
                     // Después de mostrar el mensaje de error, recargar la página inmediatamente
+                    alert('Se está adaptando a los cambios. Por favor, espere un momento.');
                     window.location.reload(true);
                 });
         });
@@ -55,14 +63,18 @@ document.addEventListener('DOMContentLoaded', function () {
             const successMessage = document.createElement('div');
             successMessage.className = 'alert alert-success';
             successMessage.innerHTML = message;
-
+        
             // Agrega el mensaje al cuerpo de la página
             document.body.appendChild(successMessage);
 
             // Elimina el mensaje y recarga la página después de un breve tiempo
             setTimeout(() => {
                 document.body.removeChild(successMessage);
-                window.location.reload(true);
+                //window.location.reload(true);
+                // Agregar este código después de la lógica de recarga
+                        //window.addEventListener('load', function () {
+                            //alert('La página se ha recargado. Mensaje personalizado aquí.');
+                        //});
             }, 0); // Ajusta el tiempo según sea necesario
         }
     }
@@ -105,7 +117,7 @@ function confirmDelete(itemnotaventaId) {
             }
         })
         .catch(error => {
-            window.location.reload(true);
+            //window.location.reload(true);
         })
         .finally(() => {
             // Elimina el mensaje y recarga la página después de un breve tiempo

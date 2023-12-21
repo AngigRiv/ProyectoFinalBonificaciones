@@ -11,27 +11,28 @@
                 <a class="btn btn-danger col-2 btn-sm" href="{% url 'descuento_list' %}"> Regresar </a>
             </div>
             <div class="card-body">
-                <form method="post">
+                <form method="post" id="descuentoForm">
                     {% csrf_token %}
                     <div class="mb-3">
-                        {{ form.cantidad_total_minima_venta.label_tag }}
+                        <label for="id_cantidad_total_minima_venta" class="form-label">Cantidad Total Mínima de Venta:</label>
                         {{ form.cantidad_total_minima_venta }}
                         {{ form.cantidad_total_minima_venta.errors }}
                     </div>
 
-                    <div class="mb-3">
+                    <div class="mb-3" id="div_rango_venta">
                         {{ form.rango_venta.label_tag }}
                         {{ form.rango_venta }}
                         {{ form.rango_venta.errors }}
                     </div>
 
-                    <div class="mb-3" id="div_cantidad_total_venta" style="display: none;">
-                        {{ form.cantidad_total_maxima_venta.label_tag }}
+                    <div class="mb-3" id="div_cantidad_total_maxima_venta">
+                        <label for="id_cantidad_total_maxima_venta" class="form-label">Cantidad Total Máxima de Venta:</label>
                         {{ form.cantidad_total_maxima_venta }}
                         {{ form.cantidad_total_maxima_venta.errors }}
                     </div>
 
-                    <div class="mb-3">
+                    <!-- Modificado para usar toggleSinLimiteVenta -->
+                    <div class="mb-3" id="div_sin_limite_venta">
                         {{ form.sin_limite_venta.label_tag }}
                         {{ form.sin_limite_venta }}
                         {{ form.sin_limite_venta.errors }}
@@ -44,33 +45,34 @@
                     </div>
 
                     <div class="mb-3">
-                        {{ form.linea_producto.label_tag }}
-                        {{ form.linea_producto }}
-                        {{ form.linea_producto.errors }}
-                    </div>
-
-                    <div class="mb-3">
-                        {{ form.cantidad_minimo_productos.label_tag }}
+                        <label for="id_cantidad_minimo_productos" class="form-label">Cantidad Mínima de Productos:</label>
                         {{ form.cantidad_minimo_productos }}
                         {{ form.cantidad_minimo_productos.errors }}
                     </div>
 
-                    <div class="mb-3">
+                    <div class="mb-3" id="div_rango_productos">
                         {{ form.rango_productos.label_tag }}
                         {{ form.rango_productos }}
                         {{ form.rango_productos.errors }}
                     </div>
 
-                    <div class="mb-3" id="div_cantidad_total_productos" style="display: none;">
-                        {{ form.cantidad_maxima_productos.label_tag }}
+                    <div class="mb-3" id="div_cantidad_maxima_productos">
+                        <label for="id_cantidad_maxima_productos" class="form-label">Cantidad Máxima de Productos:</label>
                         {{ form.cantidad_maxima_productos }}
                         {{ form.cantidad_maxima_productos.errors }}
                     </div>
 
-                    <div class="mb-3">
+                    <!-- Modificado para usar toggleSinLimiteProductos -->
+                    <div class="mb-3" id="div_sin_limite_productos">
                         {{ form.sin_limite_productos.label_tag }}
                         {{ form.sin_limite_productos }}
                         {{ form.sin_limite_productos.errors }}
+                    </div>
+
+                    <div class="mb-3" id="div_linea_producto">
+                        {{ form.linea_producto.label_tag }}
+                        {{ form.linea_producto }}
+                        {{ form.linea_producto.errors }}
                     </div>
 
                     <div class="mb-3">
@@ -79,7 +81,7 @@
                         {{ form.limitar_clientes.errors }}
                     </div>
 
-                    <div class="mb-3" id="div_canal_cliente" style="display: none;">
+                    <div class="mb-3" id="div_canal_cliente">
                         {{ form.canal_cliente.label_tag }}
                         {{ form.canal_cliente }}
                         {{ form.canal_cliente.errors }}
@@ -90,78 +92,156 @@
             </div>
         </div>
     </div>
+    {% if form.errors %}
+    <div class="alert alert-danger" role="alert">
+        <strong>Error en el formulario:</strong>
+        {{ form.errors }}
+    </div>
+    {% endif %}
 </main>
 <script>
-    $(document).ready(function () {
-        // Función para ocultar todos los campos
-        function ocultarTodosLosCampos() {
-            $('.campo-descuento').hide();
+    function toggleCanalCliente() {
+        var divCanalCliente = document.getElementById('div_canal_cliente');
+        var limitarClientesCheckbox = document.getElementById('id_limitar_clientes');
+        var canalClienteField = document.getElementById('id_canal_cliente');
+
+        if (limitarClientesCheckbox.checked) {
+            divCanalCliente.style.display = 'block';
+            canalClienteField.disabled = false;
+        } else {
+            divCanalCliente.style.display = 'none';
+            canalClienteField.disabled = true;
         }
+    }
 
-        // Función para mostrar u ocultar campos según la opción seleccionada
-        function mostrarOcultarCampos() {
-            console.log("Función mostrarOcultarCampos llamada");
+    function toggleCantidadMaximaVenta() {
+        var divCantidadMaximaVenta = document.getElementById('div_cantidad_total_maxima_venta');
+        var rangoVentaCheckbox = document.getElementById('id_rango_venta');
+        var cantidadMaximaVentaField = document.getElementById('id_cantidad_total_maxima_venta');
+        var divSinLimiteVenta = document.getElementById('div_sin_limite_venta');
+        var sinLimiteVentaField = document.getElementById('id_sin_limite_venta');
 
-            // Mostrar u ocultar canal_cliente según el estado de limitar_clientes
-            mostrarOcultarCamposCanalCliente();
-            mostrarOcultarCamposCantidadMaxima();
-            mostrarOcultarCamposProductoMaximo();
+        if (rangoVentaCheckbox.checked) {
+            divCantidadMaximaVenta.style.display = 'block';
+            cantidadMaximaVentaField.disabled = false;
+            divSinLimiteVenta.style.display = 'none';
+            sinLimiteVentaField.removeAttribute('required');
+            sinLimiteVentaField.checked = false;
+        } else {
+            divCantidadMaximaVenta.style.display = 'none';
+            cantidadMaximaVentaField.disabled = true;
+            divSinLimiteVenta.style.display = 'block';
+            sinLimiteVentaField.setAttribute('required', 'required');
         }
+    }
 
-        // Función para mostrar u ocultar canal_cliente según el estado de limitar_clientes
-        function mostrarOcultarCamposCanalCliente() {
-            console.log("Función mostrarOcultarCamposCanalCliente llamada");
+    function toggleCantidadMaximaProducto() {
+        var divCantidadMaximaProducto = document.getElementById('div_cantidad_maxima_productos');
+        var rangoProductosCheckbox = document.getElementById('id_rango_productos');
+        var cantidadMaximaProductoField = document.getElementById('id_cantidad_maxima_productos');
+        var divSinLimiteProductos = document.getElementById('div_sin_limite_productos');
+        var sinLimiteProductosField = document.getElementById('id_sin_limite_productos');
 
-            // Lógica para mostrar u ocultar canal_cliente según ciertas condiciones
-            var limitarClientes = $('#id_limitar_clientes').prop('checked');
-
-            if (limitarClientes) {
-                console.log("Limitar clientes checked (canal cliente)");
-                $('#div_canal_cliente').show();
-            } else {
-                console.log("Limitar clientes unchecked (canal cliente)");
-                $('#div_canal_cliente').hide();
-            }
+        if (rangoProductosCheckbox.checked) {
+            divCantidadMaximaProducto.style.display = 'block';
+            cantidadMaximaProductoField.disabled = false;
+            divSinLimiteProductos.style.display = 'none';
+            sinLimiteProductosField.removeAttribute('required');
+            sinLimiteProductosField.checked = false;
+        } else {
+            divCantidadMaximaProducto.style.display = 'none';
+            cantidadMaximaProductoField.disabled = true;
+            divSinLimiteProductos.style.display = 'block';
+            sinLimiteProductosField.setAttribute('required', 'required');
         }
+    }
 
-        function mostrarOcultarCamposCantidadMaxima() {
-            console.log("Función mostrarOcultarCamposCantidadMaxima llamada");
+    function toggleSinLimiteVenta() {
+        var divRangoVenta = document.getElementById('div_rango_venta');
+        var sinLimiteVentaCheckbox = document.getElementById('id_sin_limite_venta');
+    
+        divRangoVenta.style.display = sinLimiteVentaCheckbox.checked ? 'none' : 'block';
+    }
+    
+    function toggleSinLimiteProductos() {
+        var divRangoProductos = document.getElementById('div_rango_productos');
+        var sinLimiteProductosCheckbox = document.getElementById('id_sin_limite_productos');
+    
+        divRangoProductos.style.display = sinLimiteProductosCheckbox.checked ? 'none' : 'block';
+    }
 
-            // Lógica para mostrar u ocultar canal_cliente según ciertas condiciones
-            var maximaventa = $('#id_rango_venta').prop('checked');
-
-            if (maximaventa ) {
-                console.log("Rango Venta checked (rango venta)");
-                $('#div_cantidad_total_venta').show();
-            } else {
-                console.log("Rango Venta unchecked (rango venta)");
-                $('#div_cantidad_total_venta').hide();
-            }
+    function toggleRangoVenta() {
+        var rangoVentaCheckbox = document.getElementById('id_rango_venta');
+        var sinLimiteVentaCheckbox = document.getElementById('id_sin_limite_venta');
+        var sinLimiteVentaField = document.getElementById('id_sin_limite_venta');
+    
+        // Desmarcar sinLimiteVentaCheckbox si rangoVentaCheckbox está marcado
+        if (rangoVentaCheckbox.checked) {
+            sinLimiteVentaCheckbox.checked = false;
+            sinLimiteVentaField.disabled = true;  // Deshabilitar sin_limite_venta
+            sinLimiteVentaField.value = null;    // Establecer el valor en nulo
+        } else {
+            sinLimiteVentaField.disabled = false;  // Habilitar sin_limite_venta
         }
+    }    
 
-        function mostrarOcultarCamposProductoMaximo() {
-            console.log("Función mostrarOcultarCamposProductoMaximo llamada");
-
-            // Lógica para mostrar u ocultar canal_cliente según ciertas condiciones
-            var maximoproducto = $('#id_rango_productos').prop('checked');
-
-            if (maximoproducto) {
-                console.log("Rango Producto checked (rango producto)");
-                $('#div_cantidad_total_productos').show();
-            } else {
-                console.log("Rango Producto unchecked (rango producto)");
-                $('#div_cantidad_total_productos').hide();
-            }
+    function toggleRangoProductos() {
+        var rangoProductosCheckbox = document.getElementById('id_rango_productos');
+        var sinLimiteProductosCheckbox = document.getElementById('id_sin_limite_productos');
+        var sinLimiteProductosField = document.getElementById('id_sin_limite_productos');
+    
+        // Desmarcar sinLimiteProductosCheckbox si rangoProductosCheckbox está marcado
+        if (rangoProductosCheckbox.checked) {
+            sinLimiteProductosCheckbox.checked = false;
+            sinLimiteProductosField.disabled = true;  // Deshabilitar sin_limite_productos
+            sinLimiteProductosField.value = null;    // Establecer el valor en nulo
+        } else {
+            sinLimiteProductosField.disabled = false;  // Habilitar sin_limite_productos
         }
+    }        
 
-        // Llama a la función al cargar la página y al cambiar la selección
-        mostrarOcultarCampos();
-        $('#id_limitar_clientes').change(mostrarOcultarCampos);
-        $('#id_rango_venta').change(mostrarOcultarCampos);
-        $('#id_rango_productos').change(mostrarOcultarCampos);
-
-        // Llama a la función al cargar la página para asegurarse de que todos los campos estén ocultos
-        ocultarTodosLosCampos();
+    document.addEventListener('DOMContentLoaded', function () {
+        // Obtener referencias a los elementos del formulario
+        var rangoVentaCheckbox = document.getElementById('id_rango_venta');
+        var sinLimiteVentaCheckbox = document.getElementById('id_sin_limite_venta');
+        var rangoProductosCheckbox = document.getElementById('id_rango_productos');
+        var sinLimiteProductosCheckbox = document.getElementById('id_sin_limite_productos');
+    
+        // Mostrar u ocultar div_rango_venta según el estado de sinLimiteVentaCheckbox
+        function toggleSinLimiteVenta() {
+            var divRangoVenta = document.getElementById('div_rango_venta');
+            divRangoVenta.style.display = sinLimiteVentaCheckbox.checked ? 'none' : 'block';
+        }
+    
+        // Mostrar u ocultar div_rango_productos según el estado de sinLimiteProductosCheckbox
+        function toggleSinLimiteProductos() {
+            var divRangoProductos = document.getElementById('div_rango_productos');
+            divRangoProductos.style.display = sinLimiteProductosCheckbox.checked ? 'none' : 'block';
+        }
+    
+        // Asociar eventos de cambio a los checkbox relevantes
+        sinLimiteVentaCheckbox.addEventListener('change', toggleSinLimiteVenta);
+        sinLimiteProductosCheckbox.addEventListener('change', toggleSinLimiteProductos);
+    
+        // Llamadas iniciales para configurar el estado inicial
+        toggleSinLimiteVenta();
+        toggleSinLimiteProductos();
     });
+
+    document.getElementById('id_limitar_clientes').addEventListener('change', toggleCanalCliente);
+    document.getElementById('id_rango_venta').addEventListener('change', toggleCantidadMaximaVenta);
+    document.getElementById('id_rango_productos').addEventListener('change', toggleCantidadMaximaProducto);
+    document.getElementById('id_sin_limite_venta').addEventListener('change', toggleSinLimiteVenta);
+    document.getElementById('id_sin_limite_productos').addEventListener('change', toggleSinLimiteProductos);
+    document.getElementById('id_rango_venta').addEventListener('change', toggleRangoVenta);
+    document.getElementById('id_rango_productos').addEventListener('change', toggleRangoProductos);
+
+    toggleCanalCliente();
+    toggleCantidadMaximaVenta();
+    toggleCantidadMaximaProducto();
+    toggleSinLimiteVenta();
+    toggleSinLimiteProductos();
+    toggleRangoProductos();
+    toggleRangoVenta();
 </script>
 {% endblock %}

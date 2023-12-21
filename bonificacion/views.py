@@ -8,9 +8,11 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.db import transaction
+from pymysql import NULL
 from .forms import *
 from .models import *
-from django.shortcuts import get_object_or_404
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 
 def login_user(request):
     if request.method == 'POST':
@@ -535,35 +537,25 @@ class DescuentosListView(ListView):
     template_name = 'descuento/descuento_list.html'
     context_object_name = 'descuento_list'
 
+@receiver(pre_save, sender=Descuentos)
+def convertir_a_decimal(sender, instance, **kwargs):
+    instance.porcentaje_descuento = float(instance.porcentaje_descuento)
+
 class DescuentosCreateView(CreateView):
     model = Descuentos
     form_class = DescuentosForm
     template_name = 'descuento/descuento_form.html'
     success_url = reverse_lazy('descuento_list')
 
-    @transaction.atomic
     def form_valid(self, form):
-        descuento = form.save(commit=False)
-        print(f"Descuento ID: {descuento.descuento_id}")
-        print(f"Cantidad Total Mínima Venta: {descuento.cantidad_total_minima_venta}")
+        print("Formulario válido. Guardando...")
+        response = super().form_valid(form)
+        print("Guardado exitoso.")
+        return response
 
-        # Configuración de campos según las condiciones
-        descuento.rango_venta = form.cleaned_data.get('rango_venta', False)
-        descuento.rango_productos = form.cleaned_data.get('rango_productos', False)
-
-        if not descuento.rango_venta:
-            descuento.cantidad_total_maxima_venta = False
-
-        if not descuento.rango_productos:
-            descuento.cantidad_maxima_productos = False
-
-        # Si sin límite venta no está marcado, establecer como False
-        descuento.sin_limite_venta = form.cleaned_data.get('sin_limite_venta', False)
-        descuento.sin_limite_productos= form.cleaned_data.get('sin_limite_productos', False)
-
-        descuento.save()
-        messages.success(self.request, 'El descuento se ha creado correctamente.')
-        return super().form_valid(form)
+    def form_invalid(self, form):
+        print("Formulario inválido. Errores:", form.errors)
+        return super().form_invalid(form)
 
 class DescuentosUpdateView(UpdateView):
     model = Descuentos

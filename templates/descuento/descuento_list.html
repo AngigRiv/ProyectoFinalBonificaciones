@@ -14,11 +14,16 @@
                 <table id="datatablesSimple" class="table">
                     <thead>
                         <tr>
-                            <th>Descripción</th>
-                            <th>Tipo Cantidad Total Venta</th>
+                            <th>Mínima Venta</th>
+                            <th>Rango Venta</th>
+                            <th>Máxima Venta</th>
+                            <th>Sin Limite Venta</th>
                             <th>Porcentaje Descuento</th>
+                            <th>Mínimo Productos</th>
+                            <th>Rango Productos</th>
+                            <th>Máximo Productos</th>
+                            <th>Sin Limite Productos</th>
                             <th>Línea de Producto</th>
-                            <th>Tipo Cantidad Productos</th>
                             <th>Limitar Clientes</th>
                             <th>Canal del Cliente</th>
                             <th>Opciones</th>
@@ -27,17 +32,18 @@
                     <tbody>
                         {% for descuento in object_list %}
                         <tr>
-                            <td>{{ descuento.descripcion }}</td>
-                            <td>{{ descuento.get_seleccionar_cantidad_total_venta_display }}</td>
+                            <td>{{ descuento.cantidad_total_minima_venta }}</td>
+                            <td>{{ descuento.rango_venta }}</td>
+                            <td>{{ descuento.cantidad_total_maxima_venta }}</td>
+                            <td>{{ descuento.sin_limite_venta }}</td>
                             <td>{{ descuento.porcentaje_descuento }}%</td>
+                            <td>{{ descuento.cantidad_minimo_productos }}</td>
+                            <td>{{ descuento.rango_productos }}</td>
+                            <td>{{ descuento.cantidad_maxima_productos }}</td>
+                            <td>{{ descuento.sin_limite_productos }}</td>
                             <td>{{ descuento.linea_producto }}</td>
-                            <td>{{ descuento.get_seleccionar_cantidad_productos_display }}</td>
-                            <td>{{ descuento.limitar_clientes }}</td>
-                            <td>
-                                {% if descuento.limitar_clientes %}
-                                    {{ descuento.canal_cliente }}
-                                {% endif %}
-                            </td>
+                            <td>{{ descuento.limitar_clientes}}</td>
+                            <td>{{ descuento.canal_cliente }}</td>
                             <td>
                                 <a href="{% url 'descuento_update' pk=descuento.pk %}" class="btn btn-warning btn-sm">Editar</a>
                                 <a href="{% url 'descuento_delete' pk=descuento.pk %}" class="btn btn-danger btn-sm">Eliminar</a>

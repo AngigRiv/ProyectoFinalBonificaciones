@@ -246,20 +246,15 @@ class FormulaDetalle(models.Model):
 
 class Descuentos(models.Model):
     descuento_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
-    cantidad_total_minima_venta = models.DecimalField(max_digits=12, decimal_places=2, default=0)
-    cantidad_total_maxima_venta = models.DecimalField(max_digits=12, decimal_places=2, default=0, null=True, blank=True)
-    sin_limite_venta = models.BooleanField(default=False)
-    rango_venta = models.BooleanField(default=False)
+    cantidad_total_minima_venta = models.DecimalField(max_digits=12, decimal_places=2)
+    cantidad_total_maxima_venta = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
+    sin_limite_venta = models.BooleanField(default=False, null=True)
+    rango_venta = models.BooleanField(default=False, null = True)
     porcentaje_descuento = models.IntegerField()
     linea_producto = models.ForeignKey(LineasArticulos, on_delete=models.CASCADE)
-    cantidad_minimo_productos = models.IntegerField()
+    cantidad_minimo_productos = models.IntegerField(null=True, blank=True)
     cantidad_maxima_productos = models.IntegerField(null=True, blank=True)
-    sin_limite_productos = models.BooleanField(default=False)
-    rango_productos = models.BooleanField(default=False)
+    sin_limite_productos = models.BooleanField(default=False, null=True)
+    rango_productos = models.BooleanField(default=False, null = True)
     limitar_clientes = models.BooleanField(default=False)
     canal_cliente = models.ForeignKey(CanalCliente, on_delete=models.CASCADE, default=None, null=True, blank=True)
-
-@receiver(pre_save, sender=Descuentos)
-def convertir_a_decimal(sender, instance, **kwargs):
-    # Antes de guardar, convierte el valor de porcentaje_descuento a decimal
-    instance.porcentaje_descuento = float(instance.porcentaje_descuento)

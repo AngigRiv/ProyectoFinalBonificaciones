@@ -339,7 +339,7 @@ class SublineasArticulosForm(forms.ModelForm):
 
 #DESCUENTOS
 class DescuentosForm(forms.ModelForm):
-    linea_id = forms.ModelChoiceField(
+    linea_producto = forms.ModelChoiceField(
         queryset=LineasArticulos.objects.all(),
         widget=forms.Select(attrs={'class': 'form-control'})
     )
@@ -354,21 +354,53 @@ class DescuentosForm(forms.ModelForm):
         model = Descuentos
         fields = '__all__'
         widgets = {
-            'cantidad_total_minima_venta': forms.NumberInput(attrs={'class': 'form-control'}),
-            'cantidad_total_maxima_venta': forms.NumberInput(attrs={'class': 'form-control'}),
-            'sin_limite_venta': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
-            'rango_venta': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'cantidad_total_minima_venta': forms.NumberInput(attrs={'class': 'form-control', 'id': 'id_cantidad_total_minima_venta'}),
+            'cantidad_total_maxima_venta': forms.NumberInput(attrs={'class': 'form-control', 'id': 'id_cantidad_total_maxima_venta'}),
             'porcentaje_descuento': forms.NumberInput(attrs={'class': 'form-control'}),
-            'linea_producto': forms.Select(attrs={'class': 'form-control'}),
-            'cantidad_minimo_productos': forms.NumberInput(attrs={'class': 'form-control'}),
-            'cantidad_maxima_productos': forms.NumberInput(attrs={'class': 'form-control'}),
-            'sin_limite_productos': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
-            'rango_productos': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
-            'limitar_clientes': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
-            'canal_cliente': forms.Select(attrs={'class': 'form-control my-custom-class'}),
+            'sin_limite_venta': forms.CheckboxInput(attrs={'class': 'form-check-input', 'onchange': 'toggleRangoVenta()'}),
+            'rango_venta': forms.CheckboxInput(attrs={'class': 'form-check-input', 'id': 'id_rango_venta'}),
+            'limitar_clientes': forms.CheckboxInput(attrs={'class': 'form-check-input', 'id': 'id_limitar_clientes'}),
+            'cantidad_minimo_productos': forms.NumberInput(attrs={'class': 'form-control', 'id': 'id_cantidad_minimo_productos'}),
+            'cantidad_maxima_productos': forms.NumberInput(attrs={'class': 'form-control', 'id': 'id_cantidad_maxima_productos'}),
+            'rango_productos': forms.CheckboxInput(attrs={'class': 'form-check-input', 'id': 'id_rango_productos'}),
+            'sin_limite_productos': forms.CheckboxInput(attrs={'class': 'form-check-input', 'onchange': 'toggleRangoProductos()'}),
         }
 
     def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)
         super(DescuentosForm, self).__init__(*args, **kwargs)
         self.fields['linea_producto'].label_from_instance = lambda obj: f"{obj.codigo_linea}"
         self.fields['canal_cliente'].label_from_instance = lambda obj: f"{obj.canal_cliente_descripcion}"
+
+        # Deshabilitar inicialmente el campo canal_cliente y cantidad_total_maxima_venta
+        limitar_clientes = self.initial.get('limitar_clientes', False) if self.instance else False
+        if not limitar_clientes:
+            self.fields['canal_cliente'].widget.attrs['disabled'] = 'disabled'
+            self.fields['canal_cliente'].required = False
+
+        rango_venta = self.initial.get('rango_venta', False) if self.instance else False
+        if not rango_venta:
+            self.fields['cantidad_total_maxima_venta'].widget.attrs['disabled'] = 'disabled'
+            self.fields['cantidad_total_maxima_venta'].required = False
+            # Si no se selecciona rango_venta, mostrar sin_limite_venta y establecer como nulo
+            self.fields['sin_limite_venta'].widget.attrs['disabled'] = False
+            self.fields['sin_limite_venta'].required = True
+
+        rango_productos = self.initial.get('rango_productos', False) if self.instance else False
+        if not rango_productos:
+            self.fields['cantidad_maxima_productos'].widget.attrs['disabled'] = 'disabled'
+            self.fields['cantidad_maxima_productos'].required = False
+            # Si no se selecciona rango_productos, mostrar sin_limite_productos y establecer como nulo
+            self.fields['sin_limite_productos'].widget.attrs['disabled'] = False
+            self.fields['sin_limite_productos'].required = True
+
+    def clean(self):
+        cleaned_data = super().clean()
+        rango_venta = cleaned_data.get('rango_venta', False)
+        sin_limite_venta = cleaned_data.get('sin_limite_venta', False)
+
+        if rango_venta and not sin_limite_venta:
+            self.fields['sin_limite_venta'].required = False
+            cleaned_data['sin_limite_venta'] = None  # Establecer sin_limite_venta como nulo
+
+        return cleaned_data
