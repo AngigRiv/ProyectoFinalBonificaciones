@@ -203,7 +203,7 @@ class ItemsNotaVenta(models.Model):
     articulo_id = models.ForeignKey('Articulos', on_delete=models.CASCADE)
     cantidad = models.DecimalField(max_digits=12, decimal_places=2, null=True)
     total_item_bruto = models.DecimalField(max_digits=12, decimal_places=2, null=True)
-    factor_descuento = models.DecimalField(max_digits=12, decimal_places=3, default=0)
+    factor_descuento = models.DecimalField(max_digits=5, decimal_places=2, default=0)
     descuento_unitario = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     total_item = models.DecimalField(max_digits=12, decimal_places=2, null=True)
     es_bonificacion = models.BooleanField(default=False)

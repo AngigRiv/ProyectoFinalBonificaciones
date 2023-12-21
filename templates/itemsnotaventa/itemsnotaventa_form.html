@@ -96,7 +96,23 @@
                             {% endif %}
                         {% endfor %}
                     </tbody>
-                </table>              
+                </table>
+                <!-- Agregar secciones de subtotal, descuento y total -->
+                <!-- Agregar secciones de subtotal, descuento y total -->
+                <div class="row mt-4">
+                    <div class="col-md-4">
+                        <h4>Subtotal</h4>
+                        <p id="subtotal-placeholder">{{ subtotal|floatformat:"2" }}</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h4>Descuento</h4>
+                        <p id="descuento-placeholder">0.00</p> <!-- Puedes actualizar esto cuando implementes descuentos -->
+                    </div>
+                    <div class="col-md-4">
+                        <h4>Total</h4>
+                        <p id="total-placeholder">{{ total|floatformat:"2" }}</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
